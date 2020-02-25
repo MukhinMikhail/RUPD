@@ -1,16 +1,16 @@
 <?php 
 	require_once ($_SERVER['DOCUMENT_ROOT']."/vendor/autoload.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/back/base.php");
 
 	$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
 	$reader->setReadDataOnly(TRUE);
-	$spreadsheet = $reader->load($_POST["uploadfile"]);
+	$spreadsheet = $reader->load($_POST["param"]);
 
 	$worksheet = $spreadsheet->getActiveSheet();
 	// Get the highest row numbers
 	$highestRow = $worksheet->getHighestRow(); // e.g. 10
-	// Get highest column numbers
-	
-	switch ($_POST["file_type"]) {
+
+	switch ($_POST["functionname"]) {
 		
 		case "teachers":
 			$highestColumn = 'G'; // e.g 'F'
@@ -37,6 +37,7 @@
 						$result = mysqli_query($link, "SELECT 	MAX(academic_rank_id)
 													   FROM 	academic_ranks 
 													   WHERE 	UPPER(full_name) = UPPER('".$value."')");
+
 						if (mysqli_num_rows($result) == 0) {
 							$sql_insert .= "null, ";
 						} else {
@@ -95,8 +96,10 @@
 				$sql_insert .= ')'.PHP_EOL;
 				connect();
 				global $link;
-				#echo $sql_insert;
+				echo $sql_insert;
 				mysqli_query($link, $sql_insert);
+				$res1 = mysqli_error($link);
+				#die(var_dump($link));
 				$result = mysqli_query($link, "SELECT 	MAX(teacher_id)
 											   FROM 	teachers 
 											   WHERE 	second_name = '".$teacher_info[1]."' 
@@ -110,10 +113,15 @@
 					}
 				}
 				$sql_insert2 .= '1)'.PHP_EOL;
-				#echo $sql_insert2;
+				echo $sql_insert2;
+
 				mysqli_query($link, $sql_insert2);
+				$res2 = mysqli_error($link);
+
+				echo ".$res1.", ".$res2.";
 				close();
 			}
+
 			echo 'Файл "Преподаватели" успешно сохранен в систму';
 			break;
 
