@@ -17,8 +17,8 @@
 					</tr>
 				</table>
 				<div class="alert alert-danger" role="alert" id="error_param" hidden>
-                    Все поля должны быть заполнены! 
-                </div>
+					Все поля должны быть заполнены!
+				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-primary" id="save_rup">Подтвердить</button>
@@ -46,9 +46,15 @@
 	</div>
 </div>
 <script>
-	$("#save_rup").click(function(){
-		$('#error_param').prop('hidden',true);
+	$("#save_rup").click(function() {
+		$('#error_param').prop('hidden', true);
 		$('#success').empty();
+		const absentia_seminar = $('.absentia_semester-checkbox:checked').map(function(i, item) {
+			return $(item).data('value');
+		}).get().join(',');
+		const intramural_seminar = $('.intramural_semester-checkbox:checked').map(function(i, item) {
+			return $(item).data('value');
+		}).get().join(',');
 		var course_value = $("#input_course option:selected").val(),
 			profile_value = $("#input_profile option:selected").val(),
 			fgos_value = $("#info_fgos_id").text(),
@@ -68,51 +74,54 @@
 			current_date = new Date(),
 			current_year = current_date.getFullYear(),
 			document_name = $("#rup_name").val(),
-			document_name_on_server = course_value + profile_value + discipline_value +'_'+ current_date.getDate() +'-'+ current_date.getMonth() +'-'+ current_year +'-'+ current_date.getHours() +'-'+ current_date.getMinutes();
+			document_name_on_server = course_value + profile_value + discipline_value + '_' + current_date.getDate() + '-' + current_date.getMonth() + '-' + current_year + '-' + current_date.getHours() + '-' + current_date.getMinutes();
 
-		if ((document_name !== '') && (document_name !== null)){
+		if ((document_name !== '') && (document_name !== null)) {
 			$.post(
-				"../back/phpWordUse.php", 
-				{functionname: 'fill_parameters', pulpit: pulpit_value
-												, discipline: discipline_value
-												, course: course_value
-												, profile: profile_value
-												, fgos: fgos_value
-												, prof_stad: prof_stad_value
-												, otf: input_otf_value
-												, tf_list: input_tf_value
-												, goal: goal_value
-												, mission: mission_value
-												, lecture: lecture_value
-												, practical: practical_value
-												, laboratory: laboratory_value
-												, individual: individual_value
-												, course_work: course_work_value
-												, course_project: course_project_value
-												, doc_name: document_name_on_server
-												, year: current_year
-				}, 
-				function(info){ 
+				"../back/phpWordUse.php", {
+					functionname: 'fill_parameters',
+					pulpit: pulpit_value,
+					discipline: discipline_value,
+					course: course_value,
+					profile: profile_value,
+					fgos: fgos_value,
+					prof_stad: prof_stad_value,
+					otf: input_otf_value,
+					tf_list: input_tf_value,
+					goal: goal_value,
+					mission: mission_value,
+					lecture: lecture_value,
+					practical: practical_value,
+					laboratory: laboratory_value,
+					individual: individual_value,
+					course_work: course_work_value,
+					course_project: course_project_value,
+					doc_name: document_name_on_server,
+					year: current_year,
+					seminars_form1: intramural_seminar,
+					seminars_form2: absentia_seminar,
+				},
+				function(info) {
 					if ($.trim(info) == 'Сохранено') {
 						$('#create_rup').modal('hide');
 						$('#complete_cretion').modal('show');
-						$('#success').append('Ваш документ сохранен на сервер как '+document_name_on_server+'.docx');
+						$('#success').append('Ваш документ сохранен на сервер как ' + document_name_on_server + '.docx');
 						var link = document.createElement('a');
-						link.setAttribute('href','../documents/'+document_name_on_server+'.docx');
-						link.setAttribute('download',''+document_name+'.docx');
-						onload=link.click();
+						link.setAttribute('href', '../documents/' + document_name_on_server + '.docx');
+						link.setAttribute('download', '' + document_name + '.docx');
+						onload = link.click();
 
 					} else {
-						alert (info);
+						alert(info);
 					}
 				}
 			);
 		} else {
-			$('#error_param').prop('hidden',false);
+			$('#error_param').prop('hidden', false);
 		}
 	});
-	
-	$("#rup_name").mouseenter (function(){
-		$('#error_param').prop('hidden',true);
+
+	$("#rup_name").mouseenter(function() {
+		$('#error_param').prop('hidden', true);
 	});
 </script>
